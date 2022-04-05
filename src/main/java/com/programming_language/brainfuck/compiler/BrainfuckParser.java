@@ -1,8 +1,11 @@
 package com.programming_language.brainfuck.compiler;
 
 
+import com.programming_language.compiler.MyData;
 import com.programming_language.compiler.MyExecutable;
 import com.programming_language.compiler.MyParser;
+
+import java.util.function.BiConsumer;
 
 class BrainfuckParser implements MyParser {
     private final String code;
@@ -23,7 +26,7 @@ class BrainfuckParser implements MyParser {
                 var block = parse();
                 var tmp = parse();
                 return (d) -> {
-                    while(!(Boolean) d.executeCommand('?',1)) {
+                    while(!(Boolean) d.executeCommand(BrainfuckFunctionality.ArrayValueIsZero,new Object[]{})) {
                         block.execute(d);
                     }
                     tmp.execute(d);
@@ -34,10 +37,35 @@ class BrainfuckParser implements MyParser {
 
         int repeatCount = zipCharSequence(ch);
         MyExecutable block = parse();
-        return (d) -> {
-            d.executeCommand(ch, repeatCount);
-            block.execute(d);
-        };
+
+        switch(ch) {
+            case '+':
+                return (d) -> {
+                    d.executeCommand(BrainfuckFunctionality.ModifyArrayValue, new Object[]{repeatCount});
+                    block.execute(d);
+                };
+            case '-':
+                return (d) -> {
+                    d.executeCommand(BrainfuckFunctionality.ModifyArrayValue, new Object[]{-repeatCount});
+                    block.execute(d);
+                };
+            case '>':
+                return (d) -> {
+                    d.executeCommand(BrainfuckFunctionality.ModifyIndex, new Object[]{repeatCount});
+                    block.execute(d);
+                };
+            case '<':
+                return (d) -> {
+                    d.executeCommand(BrainfuckFunctionality.ModifyIndex, new Object[]{-repeatCount});
+                    block.execute(d);
+                };
+            case '.':
+                return (d) -> {
+                    d.executeCommand(BrainfuckFunctionality.PrintArrayValue, new Object[]{repeatCount});
+                    block.execute(d);
+                };
+        }
+        return (d) -> {};
     }
 
     private int zipCharSequence(char ch) {

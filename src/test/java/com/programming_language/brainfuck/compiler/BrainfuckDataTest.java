@@ -3,6 +3,7 @@ package com.programming_language.brainfuck.compiler;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
+import javax.management.ObjectName;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -19,13 +20,19 @@ class BrainfuckDataTest {
         int repeat = rnd.nextInt(100);
         int move = rnd.nextInt(BrainfuckData.ARRAY_SIZE);
 
-        data.executeCommand('+', character);
-        data.executeCommand('.', repeat);
-        data.executeCommand('>', move);
-        data.executeCommand('+', character);
-        data.executeCommand('.', repeat);
+//        data.executeCommand('+', character);
+//        data.executeCommand('.', repeat);
+//        data.executeCommand('>', move);
+//        data.executeCommand('+', character);
+//        data.executeCommand('.', repeat);
 
-        var actual = data.executeCommand('#',1);
+        data.executeCommand(BrainfuckFunctionality.ModifyArrayValue, new Object[]{character});
+        data.executeCommand(BrainfuckFunctionality.PrintArrayValue, new Object[]{repeat});
+        data.executeCommand(BrainfuckFunctionality.ModifyIndex, new Object[]{move});
+        data.executeCommand(BrainfuckFunctionality.ModifyArrayValue, new Object[]{character});
+        data.executeCommand(BrainfuckFunctionality.PrintArrayValue, new Object[]{repeat});
+
+        var actual = data.executeCommand(BrainfuckFunctionality.GetCurrentOutput,new Object[]{});
         var expected = String.valueOf((char) character).repeat(repeat*2);
 
         assertEquals(expected, actual);
@@ -43,14 +50,14 @@ class BrainfuckDataTest {
         int test = 0;
 
         for (int i=-(1<<20);i<=(1<<20);i++) {
-            if (i>=0) data.executeCommand('+', i); else data.executeCommand('-', -i);
-            data.executeCommand('.',1);
+            data.executeCommand(BrainfuckFunctionality.ModifyArrayValue, new Object[]{i});
+            data.executeCommand(BrainfuckFunctionality.PrintArrayValue,new Object[]{1});
 
             test = reliableMOD(test, i, BrainfuckData.MOD);
             expected.append((char) test);
         }
 
-        assertEquals(data.executeCommand('#', 1), expected.toString());
+        assertEquals(data.executeCommand(BrainfuckFunctionality.GetCurrentOutput, new Object[]{}), expected.toString());
     }
 
     @Test
@@ -63,9 +70,9 @@ class BrainfuckDataTest {
 
         for (int j=-(1<<20);j<=(1<<20);j++) {
 
-            if (j>=0) data.executeCommand('>', j); else data.executeCommand('<', -j);
-            data.executeCommand('+', 1);
-            data.executeCommand('.',1);
+            data.executeCommand(BrainfuckFunctionality.ModifyIndex, new Object[]{j});
+            data.executeCommand(BrainfuckFunctionality.ModifyArrayValue, new Object[]{1});
+            data.executeCommand(BrainfuckFunctionality.PrintArrayValue,new Object[]{1});
 
             i = reliableMOD(i, j, BrainfuckData.ARRAY_SIZE);
             arr[i] = reliableMOD(arr[i], 1, BrainfuckData.MOD);
@@ -73,7 +80,7 @@ class BrainfuckDataTest {
             expected.append((char) arr[i]);
         }
 
-        assertEquals(data.executeCommand('#', 1), expected.toString());
+        assertEquals(data.executeCommand(BrainfuckFunctionality.GetCurrentOutput, new Object[]{}), expected.toString());
     }
 
 }

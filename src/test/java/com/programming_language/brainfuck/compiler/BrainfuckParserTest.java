@@ -11,8 +11,8 @@ class BrainfuckParserTest {
     void parse() {
         var parser = new BrainfuckParser("+[-->-[>>+>-----<<]<--<---]>-.>>>+.>>..+++[.>]<<<<.+++.------.<<-.>>>>+.");
         var res = parser.parse();
-        MyData data = new BrainfuckData();
+        MyData<BrainfuckFunctionality> data = new BrainfuckData();
         res.execute(data);
-        assertEquals(data.executeCommand('#', 1), "Hello, World!");
+        assertEquals(data.executeCommand(BrainfuckFunctionality.GetCurrentOutput, new Object[]{}), "Hello, World!");
     }
 }

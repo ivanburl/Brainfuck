@@ -2,10 +2,32 @@ package com.programming_language.brainfuck.compiler;
 
 import com.programming_language.compiler.MyData;
 
-public class BrainfuckData implements MyData {
+public class BrainfuckData implements MyData<BrainfuckFunctionality> {
     public static final int ARRAY_SIZE = 30_000;
     public static final int BITS = 8;
     public static final int MOD = 1<<BITS;
+
+    @Override
+    public Object executeCommand(BrainfuckFunctionality command, Object[] args) {
+        if (args == null) return new UnsupportedOperationException();
+
+        switch(command) {
+            case ArrayValueIsZero:
+                return isZero(args);
+            case ModifyArrayValue:
+                arrayModification(args);
+                break;
+            case ModifyIndex:
+                indexModification(args);
+                break;
+            case PrintArrayValue:
+                print(args);
+                break;
+            case GetCurrentOutput:
+                return getOutput(args);
+        }
+        return null;
+    }
 
     private final char[] arr;
     private int i;
@@ -18,53 +40,37 @@ public class BrainfuckData implements MyData {
         output = new StringBuilder();
     }
 
-    private void indexModification(int value) {
-        i+=value;
-        i%=ARRAY_SIZE;
-        if (i<0) i+=ARRAY_SIZE;
+    private void indexModification(Object[] args) {
+        if (args.length != 1) throw new UnsupportedOperationException();
+
+        i+=(Integer) args[0];
+        i %= ARRAY_SIZE;
+        if (i<0) i += ARRAY_SIZE;
     }
 
-    private void arrayModification(int value) {
+    private void arrayModification(Object[] args) {
+        if (args.length != 1) throw new UnsupportedOperationException();
+
+        Integer value = (Integer) args[0];
+
         value = (value + arr[i]) % MOD;
         if (value<0) value += MOD;
-        arr[i] = (char) value;
+
+        arr[i] = (char) value.intValue();
     }
 
-    private Boolean isZero() {
+    private Boolean isZero(Object[] args) {
+        if (args.length != 0) throw new UnsupportedOperationException();
         return arr[i]==0;
     }
 
-    private void print(int count) {
-        output.append(String.valueOf(arr[i]).repeat(count));
+    private void print(Object[] args) {
+        if (args.length != 1) throw new UnsupportedOperationException();
+        output.append(String.valueOf(arr[i]).repeat((Integer) args[0]));
     }
 
-    private String getOutput() {
+    private String getOutput(Object[] args) {
+        if (args.length != 0) throw new UnsupportedOperationException();
         return output.toString();
-    }
-
-    @Override
-    public Object executeCommand(char command, int repeatCount) {//TODO: to find out better way of representing commands
-        switch(command) {
-            case '?':
-                return isZero();
-            case '+':
-                arrayModification(repeatCount);
-                break;
-            case '-':
-                arrayModification(-repeatCount);
-                break;
-            case '>':
-                indexModification(repeatCount);
-                break;
-            case '<':
-                indexModification(-repeatCount);
-                break;
-            case '.':
-                print(repeatCount);
-                break;
-            case '#':
-                return output.toString();
-        }
-        return null;
     }
 }

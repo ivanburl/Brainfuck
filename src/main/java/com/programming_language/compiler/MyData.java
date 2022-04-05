@@ -1,5 +1,5 @@
 package com.programming_language.compiler;
 
-public interface MyData {
-    Object executeCommand(char command, int repeatCount);
+public interface MyData<T extends MyFunctionality> {
+    Object executeCommand(T command, Object[] args);
 }

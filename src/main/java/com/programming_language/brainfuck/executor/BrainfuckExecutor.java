@@ -1,6 +1,7 @@
 package com.programming_language.brainfuck.executor;
 
 import com.programming_language.brainfuck.compiler.BrainfuckData;
+import com.programming_language.brainfuck.compiler.BrainfuckFunctionality;
 import com.programming_language.compiler.MyData;
 import com.programming_language.compiler.MyExecutable;
 import com.programming_language.executor.MyExecutor;
@@ -27,8 +28,6 @@ public class BrainfuckExecutor implements MyExecutor {
     public String executeWithoutOutput() {
         MyData data = new BrainfuckData();
         exe.execute(data);
-        return (String) data.executeCommand('#',1);
+        return (String) data.executeCommand(BrainfuckFunctionality.GetCurrentOutput,new Object[]{});
     }
-
-
 }
